@@ -3,6 +3,11 @@ import * as THREE from "three";
 import { MTLLoader, OBJLoader } from "three-obj-mtl-loader";
 import OrbitControls from "three-orbitcontrols";
 
+import a_json_object from "./threeJsItems/scene.json"
+
+// import { APP } from './threeJsItems/app';
+
+const { innerWidth: width, innerHeight: height } = window;
 class ThreeScene extends Component {
   componentDidMount() {
     const width = this.mount.clientWidth;
@@ -11,7 +16,7 @@ class ThreeScene extends Component {
 
     //Add Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setClearColor("#263238");
+    this.renderer.setClearColor("#fff");
     this.renderer.setSize(width, height);
     this.mount.appendChild(this.renderer.domElement);
 
@@ -45,13 +50,19 @@ class ThreeScene extends Component {
 
   addModels() {
     // -----Step 1--------
-    const geometry = new THREE.BoxGeometry(5, 5, 5);
-    const material = new THREE.MeshBasicMaterial({
-      color: "#0F0"
-    });
-    this.cube = new THREE.Mesh(geometry, material);
-    this.scene.add(this.cube);
+    // const geometry = new THREE.BoxGeometry(5, 5, 5);
+    // const material = new THREE.MeshBasicMaterial({
+    //   color: "#0F0"
+    // });
+    // this.cube = new THREE.Mesh(geometry, material);
+    // this.scene.add(this.cube);
 
+    const loader = new THREE.ObjectLoader();
+
+    const object = loader.parse( a_json_object );
+
+    this.scene.add( object );
+    
     // -----Step 2--------
     //LOAD TEXTURE and on completion apply it on SPHERE
     new THREE.TextureLoader().load(
@@ -71,34 +82,37 @@ class ThreeScene extends Component {
       }
     );
 
+    
+
+
     // -----Step 4--------
     //Loading 3d Models
     //Loading Material First
-    var mtlLoader = new MTLLoader();
-    mtlLoader.setBaseUrl("./assets/");
-    mtlLoader.load("freedom.mtl", materials => {
-      materials.preload();
-      console.log("Material loaded");
-      //Load Object Now and Set Material
-      var objLoader = new OBJLoader();
-      objLoader.setMaterials(materials);
-      objLoader.load(
-        "./assets/freedom.obj",
-        object => {
-          this.freedomMesh = object;
-          this.freedomMesh.position.setY(3); //or  this
-          this.freedomMesh.scale.set(0.02, 0.02, 0.02);
-          this.scene.add(this.freedomMesh);
-        },
-        xhr => {
-          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-        },
-        // called when loading has errors
-        error => {
-          console.log("An error happened" + error);
-        }
-      );
-    });
+    // var mtlLoader = new MTLLoader();
+    // mtlLoader.setBaseUrl("./assets/");
+    // mtlLoader.load("freedom.mtl", materials => {
+    //   materials.preload();
+    //   console.log("Material loaded");
+    //   //Load Object Now and Set Material
+    //   var objLoader = new OBJLoader();
+    //   objLoader.setMaterials(materials);
+    //   objLoader.load(
+    //     "./assets/freedom.obj",
+    //     object => {
+    //       this.freedomMesh = object;
+    //       this.freedomMesh.position.setY(3); //or  this
+    //       this.freedomMesh.scale.set(0.02, 0.02, 0.02);
+    //       this.scene.add(this.freedomMesh);
+    //     },
+    //     xhr => {
+    //       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+    //     },
+    //     // called when loading has errors
+    //     error => {
+    //       console.log("An error happened" + error);
+    //     }
+    //   );
+    // });
   }
 
   componentWillUnmount() {
@@ -116,8 +130,8 @@ class ThreeScene extends Component {
   animate = () => {
     // -----Step 3--------
     //Rotate Models
-    if (this.cube) this.cube.rotation.y += 0.01;
-    if (this.freedomMesh) this.freedomMesh.rotation.y += 0.01;
+    // if (this.cube) this.cube.rotation.y += 0.01;
+    // if (this.freedomMesh) this.freedomMesh.rotation.y += 0.01;
 
     this.renderScene();
     this.frameId = window.requestAnimationFrame(this.animate);
@@ -125,11 +139,11 @@ class ThreeScene extends Component {
   renderScene = () => {
     if (this.renderer) this.renderer.render(this.scene, this.camera);
   };
-
+  
   render() {
     return (
       <div
-        style={{ width: "800px", height: "800px" }}
+        style={{ width: width, height: "450px" }}
         ref={mount => {
           this.mount = mount;
         }}
